@@ -6,10 +6,23 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Utility class for reading and writing CSV files containing movie data.
+ *
+ * @author Michea Colautti
+ * @author Julian Cummaudo
+ * @version 2025-02-21
+ */
 public class CsvTool {
 
     private static final String CONFIG_FILE = "assets/settings.txt";
 
+    /**
+     * Reads a CSV file containing movie information and returns a list of {@code Movie} objects.
+     * The CSV file path is retrieved from a configuration file.
+     *
+     * @return a list of {@code Movie} objects parsed from the CSV file.
+     */
     public List<Movie> readCsv() {
         List<Movie> movies = new ArrayList<>();
         String csvPath = getCsvPathFromConfig();
@@ -44,6 +57,12 @@ public class CsvTool {
         return movies;
     }
 
+    /**
+     * Writes a list of {@code Movie} objects to a CSV file.
+     *
+     * @param movies        the list of {@code Movie} objects to write.
+     * @param outputCsvPath the file path where the CSV should be saved.
+     */
     public void writeCsv(List<Movie> movies, String outputCsvPath) {
         try (CSVWriter writer = new CSVWriter(new FileWriter(outputCsvPath))) {
             // Write header
@@ -54,12 +73,12 @@ public class CsvTool {
             for (Movie movie : movies) {
                 writer.writeNext(new String[]{
                         /*String.valueOf(movie.getYear()),
-                        String.valueOf(movie.getDuration()),
-                        movie.getDirector(),
-                        movie.getStar1(),
-                        movie.getStar2(),
-                        movie.getStar3(),
-                        movie.getStar4()*/
+                         String.valueOf(movie.getDuration()),
+                         movie.getDirector(),
+                         movie.getStar1(),
+                         movie.getStar2(),
+                         movie.getStar3(),
+                         movie.getStar4()*/
                 });
             }
         } catch (IOException e) {
@@ -67,6 +86,11 @@ public class CsvTool {
         }
     }
 
+    /**
+     * Reads the CSV file path from the configuration file.
+     *
+     * @return the CSV file path as a string, or {@code null} if an error occurs.
+     */
     private String getCsvPathFromConfig() {
         try (BufferedReader br = new BufferedReader(new FileReader(CONFIG_FILE))) {
             return br.readLine(); // Read the first line as CSV path
