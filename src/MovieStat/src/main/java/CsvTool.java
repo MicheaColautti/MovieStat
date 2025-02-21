@@ -8,7 +8,7 @@ import java.util.List;
 
 public class CsvTool {
 
-    private static final String CONFIG_FILE = "settings.txt";
+    private static final String CONFIG_FILE = "assets/settings.txt";
 
     public List<Movie> readCsv() {
         List<Movie> movies = new ArrayList<>();
@@ -28,7 +28,7 @@ public class CsvTool {
 
                 // Extract required fields
                 int year = Integer.parseInt(row[2]);
-                double duration = Double.parseDouble(row[4]);
+                double duration = Double.parseDouble(row[4].replaceAll("[^0-9]", "")); // Remove non-numeric characters
                 String director = row[9];
                 String star1 = row[10];
                 String star2 = row[11];
@@ -52,15 +52,15 @@ public class CsvTool {
 
             // Write movie data
             for (Movie movie : movies) {
-                /*writer.writeNext(new String[]{
-                        movie.getYear(),
-                        movie.getDuration(),
+                writer.writeNext(new String[]{
+                        /*String.valueOf(movie.getYear()),
+                        String.valueOf(movie.getDuration()),
                         movie.getDirector(),
                         movie.getStar1(),
                         movie.getStar2(),
                         movie.getStar3(),
-                        movie.getStar4()
-                });*/
+                        movie.getStar4()*/
+                });
             }
         } catch (IOException e) {
             System.err.println("Error writing the CSV file: " + e.getMessage());
