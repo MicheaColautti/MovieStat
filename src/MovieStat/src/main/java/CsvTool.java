@@ -5,9 +5,8 @@ import com.opencsv.exceptions.CsvException;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
-
-//Commenjt
 /**
  * Utility class for reading and writing CSV files containing movie data.
  *
@@ -17,7 +16,11 @@ import java.util.List;
  */
 public class CsvTool {
 
-    private static final String CONFIG_FILE = "assets/settings.txt";
+    private static final String CONFIG_FILE = "assets/settings.properties";
+
+    //initially empty, these two variables will be filled as soon as "readCsv" is called
+    private static String inputFile = "";
+    private static String outputFile = "";
 
     /**
      * Reads a CSV file containing movie information and returns a list of {@code Movie} objects.
@@ -27,7 +30,8 @@ public class CsvTool {
      */
     public List<Movie> readCsv() {
         List<Movie> movies = new ArrayList<>();
-        String csvPath = getCsvPathFromConfig();
+        getCsvPathFromConfig();
+        String csvPath = inputFile;
 
         if (csvPath == null) {
             System.err.println("CSV path not found in configuration file.");
@@ -90,15 +94,16 @@ public class CsvTool {
 
     /**
      * Reads the CSV file path from the configuration file.
-     *
-     * @return the CSV file path as a string, or {@code null} if an error occurs.
+     * Sets inputFile and outputFile
      */
-    private String getCsvPathFromConfig() {
-        try (BufferedReader br = new BufferedReader(new FileReader(CONFIG_FILE))) {
-            return br.readLine(); // Read the first line as CSV path
+    private void getCsvPathFromConfig() {
+        try {
+            Properties pathsProp = new Properties();
+            pathsProp.load(new FileInputStream(CONFIG_FILE));
+            inputFile = pathsProp.getProperty("input");
+            outputFile = pathsProp.getProperty("output");
         } catch (IOException e) {
-            System.err.println("Error reading the config file: " + e.getMessage());
-            return null;
+            System.out.println("Error while reading properties file");;
         }
     }
 }

@@ -50,20 +50,6 @@ public class MovieList {
     }
 
     /**
-     * Returns a string representation of all movies in the list.
-     * Each movie is printed to the console.
-     *
-     * @return an empty string.
-     */
-    @Override
-    public String toString() {
-        for (Movie m : movieList) {
-            System.out.println(m);
-        }
-        return "";
-    }
-
-    /**
      * Returns the name of the director with the most movies in the list.
      *
      * @return the director's name, or an empty string if no data is available.

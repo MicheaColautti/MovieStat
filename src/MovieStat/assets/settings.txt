@@ -1,2 +1,0 @@
-assets/imdb_top_1000.csv
-assets/out.csv
