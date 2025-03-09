@@ -1,12 +1,12 @@
 import java.util.Arrays;
 
 /**
- * Represents a movie with basic details such as release year, duration, director, and starring actors.
+ * Represents a movie with details such as release year, duration, director, starring actors, and IMDB rating.
  * This class provides getters to access movie details and a formatted {@code toString} method.
  *
  * @author Michea Colautti
  * @author Julian Cummaudo
- * @version 2025-02-21
+ * @version 2025-03-09
  */
 public class Movie {
 
@@ -14,6 +14,7 @@ public class Movie {
     private double duration;
     private String director;
     private String[] stars;
+    private double rating; // IMDB rating
 
     /**
      * Constructs a {@code Movie} object with the specified details.
@@ -25,12 +26,14 @@ public class Movie {
      * @param s2       The second starring actor.
      * @param s3       The third starring actor.
      * @param s4       The fourth starring actor.
+     * @param rating   The IMDB rating of the movie.
      */
-    public Movie(int year, double duration, String director, String s1, String s2, String s3, String s4) {
+    public Movie(int year, double duration, String director, String s1, String s2, String s3, String s4, double rating) {
         this.year = year;
         this.duration = duration;
         this.director = director;
         this.stars = new String[]{s1, s2, s3, s4};
+        this.rating = rating;
     }
 
     /**
@@ -70,6 +73,15 @@ public class Movie {
     }
 
     /**
+     * Returns the IMDB rating of the movie.
+     *
+     * @return the IMDB rating.
+     */
+    public double getRating() {
+        return rating;
+    }
+
+    /**
      * Returns a string representation of the movie.
      *
      * @return a formatted string with movie details.
@@ -81,6 +93,7 @@ public class Movie {
                 ", duration=" + duration +
                 ", director='" + director + '\'' +
                 ", stars=" + Arrays.toString(stars) +
+                ", rating=" + rating +
                 '}';
     }
 }
