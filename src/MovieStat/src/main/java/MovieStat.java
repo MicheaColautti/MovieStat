@@ -2,7 +2,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.OptionalDouble;
 import java.util.stream.Collectors;
 
 /**
@@ -23,8 +22,8 @@ public class MovieStat {
      * The main method that runs the movie statistics application.
      */
     public void load() {
-        movieList = new ArrayList<Movie>();
-        movieList = pupulate();
+        movieList = new ArrayList<>();
+        movieList = populate();
     }
 
     public void compute() {
@@ -40,7 +39,7 @@ public class MovieStat {
     /**
      * Populates the movie list by reading from a CSV file using {@code CsvTool}.
      */
-    public List<Movie> pupulate() {
+    public List<Movie> populate() {
         return csvTool.readCsv();
     }
 
@@ -107,7 +106,7 @@ public class MovieStat {
                 .map(Map.Entry::getKey) // Extract the year
                 .orElse(0); // Default to 0 if no data
     }
-    
+
     /**
      * Generic method to find the most frequent occurrence of a string in a list.
      * Used for both director counting and star counting.
