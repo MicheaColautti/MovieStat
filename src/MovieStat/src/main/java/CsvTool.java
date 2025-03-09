@@ -12,13 +12,13 @@ import java.util.Properties;
  *
  * @author Michea Colautti
  * @author Julian Cummaudo
- * @version 2025-02-21
+ * @version 2025-03-09
  */
 public class CsvTool {
 
     private static final String CONFIG_FILE = "assets/settings.properties";
 
-    //initially empty, these two variables will be filled as soon as "readCsv" is called
+    // Initially empty, these variables will be filled when "readCsv" is called
     private static String inputFile = "";
     private static String outputFile = "";
 
@@ -30,15 +30,14 @@ public class CsvTool {
      */
     public List<Movie> readCsv() {
         List<Movie> movies = new ArrayList<>();
-        getCsvPathFromConfig();
-        String csvPath = inputFile;
+        loadCsvPathsFromConfig();
 
-        if (csvPath == null) {
-            System.err.println("CSV path not found in configuration file.");
+        if (inputFile == null || inputFile.isEmpty()) {
+            System.err.println("CSV input file path is missing in the configuration file.");
             return movies;
         }
 
-        try (CSVReader reader = new CSVReader(new FileReader(csvPath))) {
+        try (CSVReader reader = new CSVReader(new FileReader(inputFile))) {
             List<String[]> records = reader.readAll();
 
             for (int i = 1; i < records.size(); i++) { // Skipping header
@@ -48,13 +47,13 @@ public class CsvTool {
                 // Extract required fields
                 int year = Integer.parseInt(row[2]);
                 double duration = Double.parseDouble(row[4].replaceAll("[^0-9]", "")); // Remove non-numeric characters
+                double rating = row[6].isEmpty() ? 0.0 : Double.parseDouble(row[6]); // IMDB Rating
                 String director = row[9];
                 String star1 = row[10];
                 String star2 = row[11];
                 String star3 = row[12];
                 String star4 = row[13];
-
-                movies.add(new Movie(year, duration, director, star1, star2, star3, star4));
+                movies.add(new Movie(year, duration, director, star1, star2, star3, star4, rating));
             }
         } catch (IOException | CsvException | NumberFormatException e) {
             System.err.println("Error reading the CSV file: " + e.getMessage());
@@ -64,46 +63,61 @@ public class CsvTool {
     }
 
     /**
-     * Writes a list of {@code Movie} objects to a CSV file.
+     * Writes computed statistics to a CSV file.
      *
-     * @param movies        the list of {@code Movie} objects to write.
-     * @param outputCsvPath the file path where the CSV should be saved.
+     * @param moviesNumber    The total number of movies.
+     * @param avgRuntime      The average runtime of the movies.
+     * @param bestDirector    The director with the highest average IMDB rating.
+     * @param mostPresentStar The most frequently appearing actor.
+     * @param mostProdYear    The year with the highest number of movie productions.
      */
-    public void writeCsv(List<Movie> movies, String outputCsvPath) {
-        try (CSVWriter writer = new CSVWriter(new FileWriter(outputCsvPath))) {
+    public void writeCsv(int moviesNumber, double avgRuntime, String bestDirector, String mostPresentStar, int mostProdYear) {
+        if (outputFile == null || outputFile.isEmpty()) {
+            System.err.println("No output file path specified.");
+            return;
+        }
+
+        File file = new File(outputFile);
+        if (file.exists()) {
+            System.out.println("Output file already existing, will be overwritten");
+        }
+
+        try (CSVWriter writer = new CSVWriter(new FileWriter(outputFile))) {
             // Write header
-            String[] header = {"Year", "Duration", "Director", "Star1", "Star2", "Star3", "Star4"};
+            String[] header = {"Movies Count", "Average Runtime", "Best Director", "Most Present Star", "Most Productive Year"};
             writer.writeNext(header);
 
-            // Write movie data
-            for (Movie movie : movies) {
-                writer.writeNext(new String[]{
-                        /*String.valueOf(movie.getYear()),
-                         String.valueOf(movie.getDuration()),
-                         movie.getDirector(),
-                         movie.getStar1(),
-                         movie.getStar2(),
-                         movie.getStar3(),
-                         movie.getStar4()*/
-                });
-            }
+            // Write statistics row
+            writer.writeNext(new String[]{
+                    String.valueOf(moviesNumber),
+                    String.valueOf(avgRuntime),
+                    bestDirector,
+                    mostPresentStar,
+                    String.valueOf(mostProdYear)
+            });
+
+            System.out.println("Statistics written to CSV successfully.");
         } catch (IOException e) {
             System.err.println("Error writing the CSV file: " + e.getMessage());
         }
     }
 
     /**
-     * Reads the CSV file path from the configuration file.
-     * Sets inputFile and outputFile
+     * Reads the CSV file paths from the configuration file and sets inputFile and outputFile.
      */
-    private void getCsvPathFromConfig() {
-        try {
+    private void loadCsvPathsFromConfig() {
+        try (FileInputStream fileInputStream = new FileInputStream(CONFIG_FILE)) {
             Properties pathsProp = new Properties();
-            pathsProp.load(new FileInputStream(CONFIG_FILE));
-            inputFile = pathsProp.getProperty("input");
-            outputFile = pathsProp.getProperty("output");
+            pathsProp.load(fileInputStream);
+            inputFile = pathsProp.getProperty("input", "");
+            outputFile = pathsProp.getProperty("output", "");
+            System.out.println("CSV Path acquired");
+
+            if (inputFile.isEmpty() || outputFile.isEmpty()) {
+                System.err.println("Warning: Some CSV paths are missing in the configuration file.");
+            }
         } catch (IOException e) {
-            System.out.println("Error while reading properties file");;
+            System.err.println("Error while reading properties file: " + e.getMessage());
         }
     }
 }
